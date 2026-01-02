@@ -36,3 +36,6 @@ docs/.vuepress/.cache
 
 
 node_modules/
+
+# Docker overrides (local development only)
+docker-compose.override.yml
