@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 import logger from '../utils/logger';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
+import { validate } from '../middleware/validate';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -13,27 +14,11 @@ const prisma = new PrismaClient();
 router.post('/register', [
   body('email').isEmail().normalizeEmail(),
   body('password').isLength({ min: 6 }),
+  validate
 ], async (req: Request, res: Response) => {
   try {
     logger.info(`Registration attempt for email: ${req.body.email}`);
-    
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      logger.warn(`Registration validation failed: ${JSON.stringify(errors.array())}`);
-      return res.status(400).json({ errors: errors.array() });
-    }
-
     const { email, password } = req.body;
-
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email }
-    });
-
-    if (existingUser) {
-      logger.warn(`Registration failed - user already exists: ${email}`);
-      return res.status(400).json({ message: 'User already exists' });
-    }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -64,7 +49,9 @@ router.post('/register', [
       user,
       token
     });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.code === 'P2002') return res.status(400).json({ message: 'Email already existed' })
+
     logger.error(`Registration error: ${error}`);
     res.status(500).json({ message: 'Server error' });
   }
@@ -77,7 +64,7 @@ router.post('/login', [
 ], async (req: Request, res: Response) => {
   try {
     logger.info(`Login attempt for email: ${req.body.email}`);
-    
+
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {

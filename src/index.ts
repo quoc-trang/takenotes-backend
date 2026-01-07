@@ -11,7 +11,7 @@ import logger from './utils/logger';
 dotenv.config(); // loads environment variables from .env file
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8080;
 
 // Middleware
 app.use(helmet()); // protects from well-known web vulnerabilities

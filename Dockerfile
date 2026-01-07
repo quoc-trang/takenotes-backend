@@ -16,7 +16,7 @@ RUN npm ci && npx prisma generate
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN npm run build 
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
@@ -28,8 +28,4 @@ RUN chown -R nodejs:nodejs /app
 # Switch to non-root user
 USER nodejs
 
-EXPOSE 3001
-
-# Use migrations for production, db push for development
-# For production, consider: CMD npx prisma migrate deploy && npm start
-CMD npx prisma db push && npm start
+CMD npx prisma migrate deploy && npm start
