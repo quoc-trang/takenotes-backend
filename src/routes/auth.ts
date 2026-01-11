@@ -1,12 +1,12 @@
 import { Router, Response, Request } from "express";
-import { body, validationResult } from "express-validator";
+import { body } from "express-validator";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import logger from "../utils/logger";
-import { authenticateToken, AuthRequest } from "../middleware/auth";
 import { validate } from "../middleware/validate";
 import authService from "../services/authService";
 import userService from "../services/userService";
+import { UserCreateInput } from "../generated/prisma/models";
 
 const router = Router();
 
@@ -26,7 +26,7 @@ router.post(
         email,
         password: hashedPassword,
       };
-      const user = await authService.register(data);
+      const user = await authService.register(data as UserCreateInput);
       const jwtSecret = process.env.JWT_SECRET!;
       const token = jwt.sign({ id: user.id, email: user.email }, jwtSecret, {
         expiresIn: "24h",
