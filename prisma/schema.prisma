@@ -8,20 +8,20 @@ datasource db {
 }
 
 model Note {
-  id        String   @id
+  id        String   @id @default(uuid())
   title     String
   content   String
   userId    String
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @updatedAt
   User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-  id        String   @id
+  id        String   @id @default(uuid())
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @updatedAt
   Note      Note[]
 }

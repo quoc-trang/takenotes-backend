@@ -1,13 +1,13 @@
-import { Router, Response } from 'express';
-import { body, validationResult } from 'express-validator';
-import { authenticateToken, AuthRequest } from '../middleware/auth';
-import logger from '../utils/logger';
-import { noteService } from '../services/noteService';
+import { Router, Response } from "express";
+import { body, validationResult } from "express-validator";
+import { authenticateToken, AuthRequest } from "../middleware/auth";
+import logger from "../utils/logger";
+import { noteService } from "../services/noteService";
 
 const router = Router();
 
 // Get all notes for authenticated user
-router.get('/', authenticateToken, async (req: AuthRequest, res) => {
+router.get("/", authenticateToken, async (req: AuthRequest, res) => {
   try {
     logger.info(`Fetching notes for user: ${req.user!.id}`);
 
@@ -17,12 +17,12 @@ router.get('/', authenticateToken, async (req: AuthRequest, res) => {
     res.json(notes);
   } catch (error) {
     logger.error(`Get notes error for user ${req.user!.id}: ${error}`);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
 // Get single note
-router.get('/:id', authenticateToken, async (req: AuthRequest, res) => {
+router.get("/:id", authenticateToken, async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
     logger.info(`Fetching note ${id} for user: ${req.user!.id}`);
@@ -31,7 +31,7 @@ router.get('/:id', authenticateToken, async (req: AuthRequest, res) => {
 
     if (!note) {
       logger.warn(`Note ${id} not found for user: ${req.user!.id}`);
-      return res.status(404).json({ message: 'Note not found' });
+      return res.status(404).json({ message: "Note not found" });
     }
 
     logger.info(`Retrieved note ${id} for user: ${req.user!.id}`);
@@ -40,17 +40,17 @@ router.get('/:id', authenticateToken, async (req: AuthRequest, res) => {
     logger.error(
       `Get note error for note ${req.params.id}, user ${req.user!.id}: ${error}`
     );
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
 // Create new note
 router.post(
-  '/',
+  "/",
   [
     authenticateToken,
-    body('title').trim().isLength({ min: 1, max: 255 }),
-    body('content').trim().isLength({ min: 1 }),
+    body("title").trim().isLength({ min: 1, max: 255 }),
+    body("content").trim().isLength({ min: 1 }),
   ],
   async (req: AuthRequest, res: Response) => {
     try {
@@ -71,7 +71,12 @@ router.post(
       const note = await noteService.create({
         title,
         content,
-        userId: req.user!.id,
+        updatedAt: new Date(),
+        User: {
+          connect: {
+            id: req.user!.id,
+          },
+        },
       });
 
       logger.info(
@@ -80,18 +85,18 @@ router.post(
       res.status(201).json(note);
     } catch (error) {
       logger.error(`Create note error for user ${req.user!.id}: ${error}`);
-      res.status(500).json({ message: 'Server error' });
+      res.status(500).json({ message: "Server error" });
     }
   }
 );
 
 // Update note
 router.put(
-  '/:id',
+  "/:id",
   [
     authenticateToken,
-    body('title').trim().isLength({ min: 1, max: 255 }),
-    body('content').trim().isLength({ min: 1 }),
+    body("title").trim().isLength({ min: 1, max: 255 }),
+    body("content").trim().isLength({ min: 1 }),
   ],
   async (req: AuthRequest, res: Response) => {
     try {
@@ -121,11 +126,11 @@ router.put(
         );
         res.json(updatedNote);
       } catch (error: any) {
-        if (error?.code === 'P2025') {
+        if (error?.code === "P2025") {
           logger.warn(
             `Note ${id} not found for update by user: ${req.user!.id}`
           );
-          return res.status(404).json({ message: 'Note not found' });
+          return res.status(404).json({ message: "Note not found" });
         }
 
         throw error;
@@ -136,13 +141,13 @@ router.put(
           req.user!.id
         }: ${error}`
       );
-      res.status(500).json({ message: 'Server error' });
+      res.status(500).json({ message: "Server error" });
     }
   }
 );
 
 // Delete note
-router.delete('/:id', authenticateToken, async (req: AuthRequest, res) => {
+router.delete("/:id", authenticateToken, async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
     logger.info(`Deleting note ${id} for user: ${req.user!.id}`);
@@ -150,13 +155,13 @@ router.delete('/:id', authenticateToken, async (req: AuthRequest, res) => {
     try {
       await noteService.delete(id, req.user!.id);
       logger.info(`Note ${id} deleted successfully for user: ${req.user!.id}`);
-      res.json({ message: 'Note deleted successfully' });
+      res.json({ message: "Note deleted successfully" });
     } catch (error: any) {
-      if (error?.code === 'P2025') {
+      if (error?.code === "P2025") {
         logger.warn(
           `Note ${id} not found for deletion by user: ${req.user!.id}`
         );
-        return res.status(404).json({ message: 'Note not found' });
+        return res.status(404).json({ message: "Note not found" });
       }
       throw error;
     }
@@ -166,7 +171,7 @@ router.delete('/:id', authenticateToken, async (req: AuthRequest, res) => {
         req.user!.id
       }: ${error}`
     );
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 });
 

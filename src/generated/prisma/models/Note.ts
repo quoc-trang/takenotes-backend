@@ -241,21 +241,21 @@ export type NoteScalarWhereWithAggregatesInput = {
 }
 
 export type NoteCreateInput = {
-  id: string
+  id?: string
   title: string
   content: string
   createdAt?: Date | string
-  updatedAt: Date | string
+  updatedAt?: Date | string
   User: Prisma.UserCreateNestedOneWithoutNoteInput
 }
 
 export type NoteUncheckedCreateInput = {
-  id: string
+  id?: string
   title: string
   content: string
   userId: string
   createdAt?: Date | string
-  updatedAt: Date | string
+  updatedAt?: Date | string
 }
 
 export type NoteUpdateInput = {
@@ -277,12 +277,12 @@ export type NoteUncheckedUpdateInput = {
 }
 
 export type NoteCreateManyInput = {
-  id: string
+  id?: string
   title: string
   content: string
   userId: string
   createdAt?: Date | string
-  updatedAt: Date | string
+  updatedAt?: Date | string
 }
 
 export type NoteUpdateManyMutationInput = {
@@ -390,19 +390,19 @@ export type NoteUncheckedUpdateManyWithoutUserNestedInput = {
 }
 
 export type NoteCreateWithoutUserInput = {
-  id: string
+  id?: string
   title: string
   content: string
   createdAt?: Date | string
-  updatedAt: Date | string
+  updatedAt?: Date | string
 }
 
 export type NoteUncheckedCreateWithoutUserInput = {
-  id: string
+  id?: string
   title: string
   content: string
   createdAt?: Date | string
-  updatedAt: Date | string
+  updatedAt?: Date | string
 }
 
 export type NoteCreateOrConnectWithoutUserInput = {
@@ -444,11 +444,11 @@ export type NoteScalarWhereInput = {
 }
 
 export type NoteCreateManyUserInput = {
-  id: string
+  id?: string
   title: string
   content: string
   createdAt?: Date | string
-  updatedAt: Date | string
+  updatedAt?: Date | string
 }
 
 export type NoteUpdateWithoutUserInput = {

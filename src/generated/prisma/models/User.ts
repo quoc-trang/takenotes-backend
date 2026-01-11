@@ -229,20 +229,20 @@ export type UserScalarWhereWithAggregatesInput = {
 }
 
 export type UserCreateInput = {
-  id: string
+  id?: string
   email: string
   password: string
   createdAt?: Date | string
-  updatedAt: Date | string
+  updatedAt?: Date | string
   Note?: Prisma.NoteCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
-  id: string
+  id?: string
   email: string
   password: string
   createdAt?: Date | string
-  updatedAt: Date | string
+  updatedAt?: Date | string
   Note?: Prisma.NoteUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -265,11 +265,11 @@ export type UserUncheckedUpdateInput = {
 }
 
 export type UserCreateManyInput = {
-  id: string
+  id?: string
   email: string
   password: string
   createdAt?: Date | string
-  updatedAt: Date | string
+  updatedAt?: Date | string
 }
 
 export type UserUpdateManyMutationInput = {
@@ -332,19 +332,19 @@ export type UserUpdateOneRequiredWithoutNoteNestedInput = {
 }
 
 export type UserCreateWithoutNoteInput = {
-  id: string
+  id?: string
   email: string
   password: string
   createdAt?: Date | string
-  updatedAt: Date | string
+  updatedAt?: Date | string
 }
 
 export type UserUncheckedCreateWithoutNoteInput = {
-  id: string
+  id?: string
   email: string
   password: string
   createdAt?: Date | string
-  updatedAt: Date | string
+  updatedAt?: Date | string
 }
 
 export type UserCreateOrConnectWithoutNoteInput = {
