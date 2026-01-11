@@ -6,7 +6,6 @@ import logger from "../utils/logger";
 import { validate } from "../middleware/validate";
 import authService from "../services/authService";
 import userService from "../services/userService";
-import { UserCreateInput } from "../generated/prisma/models";
 
 const router = Router();
 
@@ -26,7 +25,7 @@ router.post(
         email,
         password: hashedPassword,
       };
-      const user = await authService.register(data as UserCreateInput);
+      const user = await authService.register(data);
       const jwtSecret = process.env.JWT_SECRET!;
       const token = jwt.sign({ id: user.id, email: user.email }, jwtSecret, {
         expiresIn: "24h",
