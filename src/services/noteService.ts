@@ -1,5 +1,4 @@
-import { Note } from "../generated/prisma/client";
-import { NoteCreateInput } from "../generated/prisma/models";
+import { Note, Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 
 type NoteSummary = Pick<
@@ -28,7 +27,7 @@ export const noteService = {
     });
   },
 
-  async create(data: NoteCreateInput): Promise<Note> {
+  async create(data: Prisma.NoteUncheckedCreateInput): Promise<Note> {
     return prisma.note.create({ data });
   },
 

@@ -1,4 +1,3 @@
-import { UserCreateInput } from "../generated/prisma/models";
 import { prisma } from "../lib/prisma";
 
 type RegiserResponse = {
@@ -8,7 +7,7 @@ type RegiserResponse = {
 };
 
 const authService = {
-  register: async (data: UserCreateInput): Promise<RegiserResponse> => {
+  register: async (data): Promise<RegiserResponse> => {
     return prisma.user.create({
       data,
       select: { id: true, email: true, createdAt: true },

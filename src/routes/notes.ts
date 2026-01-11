@@ -72,11 +72,7 @@ router.post(
         title,
         content,
         updatedAt: new Date(),
-        User: {
-          connect: {
-            id: req.user!.id,
-          },
-        },
+        userId: req.user!.id,
       });
 
       logger.info(
