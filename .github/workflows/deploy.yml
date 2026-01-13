@@ -1,0 +1,40 @@
+name: Deploy Takenotes backend to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest #github will provide a VM run latest Ubuntu to run the job
+
+    permissions:
+      contents: "read" # this permission allow the VM to read our codebase
+      id-token: "write" # most important permission: connect with google cloud (Workload federation)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 # this cmd download all the code from github into the VM
+
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: "${{ secrets.WIF_PROVIDER }}"
+          service_account: "${{ secrets.WIF_SERVICE_ACCOUNT }}"
+
+      - name: Docker Auth
+        run: gcloud auth configure-docker asia-southeast1-docker.pkg.dev --quiet
+
+      - name: Build and Push Container
+        run: |-
+          docker build -t asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/takenotes-backend-express-repo/takenotes-backend:${{ github.sha }} .
+          docker push asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/takenotes-backend-express-repo/takenotes-backend:${{ github.sha }}
+
+      - name: Deploy to Cloud Run
+        uses: "google-github-actions/deploy-cloudrun@v2"
+        with:
+          service: "backend-image"
+          image: "asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/takenotes-backend-express-repo/takenotes-backend:${{ github.sha }}"
+          region: "asia-southeast1"
