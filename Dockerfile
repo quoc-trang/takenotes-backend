@@ -1,40 +1,49 @@
 # --- STAGE 1: Build ---
 FROM node:20-alpine AS builder
 
-# install openssl for Prisma
-RUN apk add --no-cache openssl
+# Prisma 6 requires openssl and sometimes libc6-compat on Alpine to run binary engines
+RUN apk add --no-cache openssl libc6-compat
 
 WORKDIR /app
 
+# Copy package files and prisma schema first to leverage Docker cache
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# using npm ci to install correct version in package.json
+# Install dependencies using npm ci for deterministic builds
 RUN npm ci
 
-# copy all the code and build
+# Copy the rest of the application code
 COPY . .
+
+# Generate Prisma Client (Binary for Alpine will be automatically selected)
 RUN npx prisma generate
+
+# Build the TypeScript application
 RUN npm run build
 
 # --- STAGE 2: Run ---
 FROM node:20-alpine AS runner
 
-RUN apk add --no-cache openssl
+# Install runtime dependencies for Prisma Client SSL connections
+RUN apk add --no-cache openssl libc6-compat
 WORKDIR /app
 
-RUN chown -R node:node /app
+# Set production environment
+ENV NODE_ENV=production
 
-# copy node_modules and files from build step to runner
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/prisma ./prisma
+# Copy built assets and modules with correct ownership for the 'node' user
+COPY --from=builder --chown=node:node /app/node_modules ./node_modules
+COPY --from=builder --chown=node:node /app/dist ./dist
+COPY --from=builder --chown=node:node /app/package*.json ./
+COPY --from=builder --chown=node:node /app/prisma ./prisma
 
-# using default user node in alpine node
+# Security: Run the application as a non-root user
 USER node
 
-# cloud run default port
+# Default port for Cloud Run
 EXPOSE 8080
 
+# Apply database migrations and start the application
+# Note: Ensure the DATABASE_URL environment variable is provided at runtime
 CMD npx prisma migrate deploy && node dist/index.js

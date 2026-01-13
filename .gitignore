@@ -13,3 +13,5 @@ node_modules/
 # Docker overrides (local development only)
 docker-compose.override.yml
 /src/generated/prisma
+
+dist
