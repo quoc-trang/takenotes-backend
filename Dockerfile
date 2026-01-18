@@ -46,4 +46,4 @@ EXPOSE 8080
 
 # Apply database migrations and start the application
 # Note: Ensure the DATABASE_URL environment variable is provided at runtime
-CMD npx prisma migrate deploy && node dist/index.js
+CMD ["node", "dist/index.js"]
