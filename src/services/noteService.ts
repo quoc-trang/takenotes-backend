@@ -17,6 +17,7 @@ export const noteService = {
         content: true,
         createdAt: true,
         updatedAt: true,
+        imageUrl: true,
       },
     });
   },
