@@ -2,8 +2,10 @@ import { Storage } from "@google-cloud/storage";
 import dotenv from "dotenv";
 dotenv.config();
 
-const storage = new Storage({
-  keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
-});
+const storage = new Storage();
 
-export const bucket = storage.bucket(process.env.GCS_BUCKET_NAME!);
+if (!process.env.GCS_BUCKET_NAME) {
+    throw new Error("GCS_BUCKET_NAME is not defined in environment variables");
+}
+
+export const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);

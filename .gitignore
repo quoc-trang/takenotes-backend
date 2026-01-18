@@ -7,6 +7,7 @@ logs
 .env.local
 .env.production
 .env.test
+secrets/*
 
 node_modules/
 

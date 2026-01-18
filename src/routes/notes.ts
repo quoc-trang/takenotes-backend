@@ -51,6 +51,7 @@ router.post(
     authenticateToken,
     body("title").trim().isLength({ min: 1, max: 255 }),
     body("content").trim().isLength({ min: 1 }),
+    body('imageUrl').optional().trim()
   ],
   async (req: AuthRequest, res: Response) => {
     try {
@@ -59,18 +60,18 @@ router.post(
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         logger.warn(
-          `Note creation validation failed for user ${
-            req.user!.id
+          `Note creation validation failed for user ${req.user!.id
           }: ${JSON.stringify(errors.array())}`
         );
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { title, content } = req.body;
+      const { title, content, imageUrl } = req.body;
 
       const note = await noteService.create({
         title,
         content,
+        imageUrl,
         updatedAt: new Date(),
         userId: req.user!.id,
       });
@@ -102,8 +103,7 @@ router.put(
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         logger.warn(
-          `Note update validation failed for note ${id}, user ${
-            req.user!.id
+          `Note update validation failed for note ${id}, user ${req.user!.id
           }: ${JSON.stringify(errors.array())}`
         );
         return res.status(400).json({ errors: errors.array() });
@@ -133,8 +133,7 @@ router.put(
       }
     } catch (error) {
       logger.error(
-        `Update note error for note ${req.params.id}, user ${
-          req.user!.id
+        `Update note error for note ${req.params.id}, user ${req.user!.id
         }: ${error}`
       );
       res.status(500).json({ message: "Server error" });
@@ -163,8 +162,7 @@ router.delete("/:id", authenticateToken, async (req: AuthRequest, res) => {
     }
   } catch (error) {
     logger.error(
-      `Delete note error for note ${req.params.id}, user ${
-        req.user!.id
+      `Delete note error for note ${req.params.id}, user ${req.user!.id
       }: ${error}`
     );
     res.status(500).json({ message: "Server error" });
